@@ -6,11 +6,6 @@ import type {
   SanityImageSource,
 } from "@sanity/image-url/lib/types/types.js";
 
-export interface Sizeable {
-  naturalWidth: number;
-  naturalHeight: number;
-}
-
 export const defaultWidths = [
   6016, // 6K
   5120, // 5K
@@ -109,30 +104,4 @@ export function metaImageUrl({
     .auto("format")
     .width(width)
     .url();
-}
-
-export function styleAspectRatio({
-  naturalWidth,
-  naturalHeight,
-}: Partial<Sizeable>) {
-  return naturalWidth && naturalHeight
-    ? `${naturalWidth} / ${naturalHeight}`
-    : "auto";
-}
-
-export function aspectRatio({
-  naturalWidth,
-  naturalHeight,
-}: Partial<Sizeable>) {
-  return naturalWidth && naturalHeight
-    ? naturalHeight / naturalWidth
-    : undefined;
-}
-
-export function sizes(values: [number, string][]) {
-  return values
-    .sort(([a], [b]) => b - a)
-    .map(([key, value]) => `(min-width: ${key}px) ${value}`)
-    .concat(["100vw"])
-    .join(", ");
 }
