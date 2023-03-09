@@ -1,3 +1,15 @@
+# v0.0.4 (Thu Mar 09 2023)
+
+#### ⚠️ Pushed to `main`
+
+- Remove utils ([@nonphoto](https://github.com/nonphoto))
+
+#### Authors: 1
+
+- Jonas Luebbers ([@nonphoto](https://github.com/nonphoto))
+
+---
+
 # v0.0.2 (Thu Mar 09 2023)
 
 #### 🐛 Bug Fix
