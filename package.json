@@ -20,10 +20,19 @@
     "build": "tsc && vite build"
   },
   "devDependencies": {
+    "@types/node": "18.14.6",
+    "auto": "10.43.0",
     "typescript": "^4.9.4",
     "vite": "^4.0.4"
   },
   "dependencies": {
     "@sanity/image-url": "1.0.2"
+  },
+  "repository": "nonphoto/sanity-image",
+  "author": "Jonas Luebbers <jonas@jonasluebbers.com>",
+  "auto": {
+    "plugins": [
+      "npm"
+    ]
   }
 }
