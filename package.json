@@ -30,6 +30,9 @@
   "packageManager": "pnpm@7.29.1",
   "repository": "nonphoto/sanity-image",
   "author": "Jonas Luebbers <jonas@jonasluebbers.com>",
+  "publishConfig": {
+    "access": "public"
+  },
   "auto": {
     "plugins": [
       "npm"
