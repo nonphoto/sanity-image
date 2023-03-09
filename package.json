@@ -27,6 +27,10 @@
   "dependencies": {
     "@sanity/image-url": "1.0.2"
   },
+  "engines": {
+    "node": "^17.0.1"
+  },
+  "packageManager": "^pnpm@7.29.1",
   "repository": "nonphoto/sanity-image",
   "author": "Jonas Luebbers <jonas@jonasluebbers.com>",
   "auto": {
