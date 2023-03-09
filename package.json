@@ -1,6 +1,5 @@
 {
-  "name": "sanity-image",
-  "private": true,
+  "name": "@nonphoto/sanity-image",
   "version": "0.0.1",
   "type": "module",
   "files": [
