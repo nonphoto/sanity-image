@@ -17,6 +17,7 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@changesets/cli": "2.26.1",
     "@types/node": "18.14.6",
     "prettier": "2.8.7",
     "tsup": "6.7.0",
