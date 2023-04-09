@@ -1,5 +1,11 @@
 # v0.0.4 (Thu Mar 09 2023)
 
+## 0.0.6
+
+### Patch Changes
+
+- Fix incorrect package exports
+
 #### ⚠️ Pushed to `main`
 
 - Remove utils ([@nonphoto](https://github.com/nonphoto))
@@ -34,8 +40,6 @@
 ---
 
 # v0.0.2 (Thu Mar 09 2023)
-
-
 
 ---
 
