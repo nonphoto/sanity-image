@@ -1,10 +1,28 @@
 import imageUrlBuilder from "@sanity/image-url";
 import type {
+  SanityAsset,
   SanityClientLike,
+  SanityImageCrop,
+  SanityImageDimensions,
+  SanityImageHotspot,
   SanityModernClientLike,
   SanityProjectDetails,
-  SanityImageSource,
 } from "@sanity/image-url/lib/types/types.js";
+
+export * from "@sanity/image-url/lib/types/types.js";
+
+export type SanityAssetWithMetadata = SanityAsset & {
+  metadata?: {
+    lqip?: string;
+    dimensions?: SanityImageDimensions;
+  };
+};
+
+export interface SanityImageObjectWithMetadata {
+  asset: SanityAssetWithMetadata;
+  crop?: SanityImageCrop;
+  hotspot?: SanityImageHotspot;
+}
 
 export const defaultWidths = [
   6016, // 6K
@@ -44,7 +62,7 @@ export function imageProps({
   widths,
   quality = defaultQuality,
 }: {
-  image: SanityImageSource;
+  image: SanityImageObjectWithMetadata;
   client: SanityClientLike | SanityProjectDetails | SanityModernClientLike;
   widths: number[];
   quality?: number;
@@ -61,28 +79,25 @@ export function imageProps({
     .quality(quality)
     .auto("format");
 
-  const metadata =
-    typeof image === "object" && "asset" in image
-      ? image.asset.metadata
-      : undefined;
-
-  const crop =
-    typeof image === "object" && "crop" in image ? image.crop : undefined;
+  const metadata = image.asset.metadata;
 
   return {
-    src: metadata?.lqip ?? builder.width(lowResWidth).url().toString(),
+    src:
+      typeof metadata?.lqip === "string"
+        ? metadata.lqip
+        : builder.width(lowResWidth).url().toString(),
     srcset: sortedWidths
       .map((width) => `${builder.width(width).url()} ${width}w`)
       .join(","),
     naturalWidth: cropAxis(
       metadata?.dimensions?.width,
-      crop?.left,
-      crop?.right
+      image.crop?.left,
+      image.crop?.right
     ),
     naturalHeight: cropAxis(
       metadata?.dimensions?.height,
-      crop?.top,
-      crop?.bottom
+      image.crop?.top,
+      image.crop?.bottom
     ),
   };
 }
@@ -93,7 +108,7 @@ export function metaImageUrl({
   width = defaultMetaImageWidth,
   quality = defaultQuality,
 }: {
-  image: SanityImageSource;
+  image: SanityImageObjectWithMetadata;
   client: SanityClientLike | SanityProjectDetails | SanityModernClientLike;
   width: number;
   quality?: number;
