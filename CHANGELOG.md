@@ -1,5 +1,11 @@
 # v0.0.4 (Thu Mar 09 2023)
 
+## 0.1.1
+
+### Patch Changes
+
+- 251033d: Remove type passthrough
+
 ## 0.1.0
 
 ### Minor Changes

@@ -10,8 +10,6 @@ import type {
   SanityProjectDetails,
 } from "@sanity/image-url/lib/types/types.js";
 
-export type * from "@sanity/image-url/lib/types/types.js";
-
 export type SanityAssetWithMetadata = SanityAsset & {
   metadata?: {
     lqip?: string;
