@@ -1,5 +1,11 @@
 # v0.0.4 (Thu Mar 09 2023)
 
+## 0.1.2
+
+### Patch Changes
+
+- Fix images without crop not respecting aspectRatio
+
 ## 0.1.1
 
 ### Patch Changes

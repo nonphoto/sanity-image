@@ -113,20 +113,21 @@ export function imageProps({
 
   const metadata = image.asset.metadata;
 
-  const cropSize =
-    image.crop && metadata?.dimensions
+  const cropSize = metadata?.dimensions
+    ? image.crop
       ? {
           width: metadata.dimensions.width - image.crop.left - image.crop.right,
           height:
             metadata.dimensions.height - image.crop.top - image.crop.bottom,
         }
-      : undefined;
+      : metadata.dimensions
+    : undefined;
 
   const naturalSize = cropSize
     ? aspectRatio
       ? fit({ width: 1, height: aspectRatio }, cropSize, "contain")
       : cropSize
-    : metadata?.dimensions;
+    : undefined;
 
   return {
     src:
