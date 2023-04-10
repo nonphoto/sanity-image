@@ -80,7 +80,7 @@ function buildAspectRatio(
   aspectRatio?: number
 ) {
   if (aspectRatio) {
-    return builder.width(width).height(width * aspectRatio);
+    return builder.width(width).height(Math.round(width * aspectRatio));
   } else {
     return builder.width(width);
   }
