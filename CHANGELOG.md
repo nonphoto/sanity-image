@@ -1,5 +1,15 @@
 # v0.0.4 (Thu Mar 09 2023)
 
+## 0.1.0
+
+### Minor Changes
+
+- Add support for forced aspectRatio
+
+### Patch Changes
+
+- 5a42ada: Improve types for image source
+
 ## 0.0.6
 
 ### Patch Changes

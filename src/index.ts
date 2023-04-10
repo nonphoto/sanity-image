@@ -1,4 +1,5 @@
 import imageUrlBuilder from "@sanity/image-url";
+import { ImageUrlBuilder } from "@sanity/image-url/lib/types/builder";
 import type {
   SanityAsset,
   SanityClientLike,
@@ -9,7 +10,7 @@ import type {
   SanityProjectDetails,
 } from "@sanity/image-url/lib/types/types.js";
 
-export * from "@sanity/image-url/lib/types/types.js";
+export type * from "@sanity/image-url/lib/types/types.js";
 
 export type SanityAssetWithMetadata = SanityAsset & {
   metadata?: {
@@ -23,6 +24,11 @@ export interface SanityImageObjectWithMetadata {
   crop?: SanityImageCrop;
   hotspot?: SanityImageHotspot;
 }
+
+export type Size = {
+  width: number;
+  height: number;
+};
 
 export const defaultWidths = [
   6016, // 6K
@@ -50,10 +56,36 @@ export const defaultMetaImageWidth = 1200;
 
 export const defaultQuality = 90;
 
-function cropAxis(length?: number, insetStart?: number, insetEnd?: number) {
-  return length
-    ? length * (1 - (insetStart ?? 0) - (insetEnd ?? 0))
-    : undefined;
+const fitComparators = {
+  cover: Math.max,
+  contain: Math.min,
+  mean: (a: number, b: number) => (a + b) / 2,
+};
+
+function fit(
+  containee: Size,
+  container: Size,
+  mode: keyof typeof fitComparators
+) {
+  const sx = container.width / containee.width;
+  const sy = container.height / containee.height;
+  const s = fitComparators[mode](sx, sy);
+  return {
+    width: containee.width * s,
+    height: containee.height * s,
+  };
+}
+
+function buildAspectRatio(
+  builder: ImageUrlBuilder,
+  width: number,
+  aspectRatio?: number
+) {
+  if (aspectRatio) {
+    return builder.width(width).height(width * aspectRatio);
+  } else {
+    return builder.width(width);
+  }
 }
 
 export function imageProps({
@@ -61,11 +93,13 @@ export function imageProps({
   client,
   widths,
   quality = defaultQuality,
+  aspectRatio,
 }: {
   image: SanityImageObjectWithMetadata;
   client: SanityClientLike | SanityProjectDetails | SanityModernClientLike;
   widths: number[];
   quality?: number;
+  aspectRatio?: number;
 }): {
   src: string;
   srcset: string;
@@ -81,24 +115,33 @@ export function imageProps({
 
   const metadata = image.asset.metadata;
 
+  const cropSize =
+    image.crop && metadata?.dimensions
+      ? {
+          width: metadata.dimensions.width - image.crop.left - image.crop.right,
+          height:
+            metadata.dimensions.height - image.crop.top - image.crop.bottom,
+        }
+      : undefined;
+
+  const naturalSize = cropSize
+    ? aspectRatio
+      ? fit({ width: 1, height: aspectRatio }, cropSize, "contain")
+      : cropSize
+    : metadata?.dimensions;
+
   return {
     src:
-      typeof metadata?.lqip === "string"
-        ? metadata.lqip
-        : builder.width(lowResWidth).url().toString(),
+      metadata?.lqip ??
+      buildAspectRatio(builder, lowResWidth, aspectRatio).url(),
     srcset: sortedWidths
-      .map((width) => `${builder.width(width).url()} ${width}w`)
+      .map(
+        (width) =>
+          `${buildAspectRatio(builder, width, aspectRatio).url()} ${width}w`
+      )
       .join(","),
-    naturalWidth: cropAxis(
-      metadata?.dimensions?.width,
-      image.crop?.left,
-      image.crop?.right
-    ),
-    naturalHeight: cropAxis(
-      metadata?.dimensions?.height,
-      image.crop?.top,
-      image.crop?.bottom
-    ),
+    naturalWidth: naturalSize?.width,
+    naturalHeight: naturalSize?.height,
   };
 }
 
