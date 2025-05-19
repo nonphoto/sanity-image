@@ -1,32 +1,23 @@
 import imageUrlBuilder from "@sanity/image-url";
 import { ImageUrlBuilder } from "@sanity/image-url/lib/types/builder";
 import type {
-  SanityAsset,
   SanityClientLike,
   SanityImageCrop,
   SanityImageDimensions,
-  SanityImageHotspot,
+  SanityImageSource,
   SanityModernClientLike,
   SanityProjectDetails,
 } from "@sanity/image-url/lib/types/types.js";
 
-export type SanityAssetWithMetadata = SanityAsset & {
-  metadata?: {
-    lqip?: string;
-    dimensions?: SanityImageDimensions;
-  };
-};
-
-export interface SanityImageObjectWithMetadata {
-  asset: SanityAssetWithMetadata;
-  crop?: SanityImageCrop;
-  hotspot?: SanityImageHotspot;
+export interface Metadata {
+  lqip?: string;
+  dimensions?: SanityImageDimensions;
 }
 
-export type Size = {
+export interface Size {
   width: number;
   height: number;
-};
+}
 
 export const defaultWidths = [
   6016, // 6K
@@ -86,39 +77,54 @@ function buildAspectRatio(
   }
 }
 
+function isCrop(x: any): x is SanityImageCrop {
+  return (
+    x &&
+    typeof x == "object" &&
+    "top" in x &&
+    typeof x.top === "number" &&
+    "right" in x &&
+    typeof x.right === "number" &&
+    "bottom" in x &&
+    typeof x.bottom === "number" &&
+    "left" in x &&
+    typeof x.left === "number"
+  );
+}
+
 export function imageProps({
-  image,
   client,
+  image,
+  metadata,
   widths,
   quality = defaultQuality,
   aspectRatio,
 }: {
-  image: SanityImageObjectWithMetadata;
   client: SanityClientLike | SanityProjectDetails | SanityModernClientLike;
-  widths: number[];
+  image: SanityImageSource;
+  metadata?: Metadata;
+  widths?: number[];
   quality?: number;
   aspectRatio?: number;
 }): {
   src: string;
-  srcset: string;
+  srcset?: string;
   naturalWidth?: number;
   naturalHeight?: number;
 } {
-  const sortedWidths = Array.from(widths).sort((a, b) => a - b);
-
   const builder = imageUrlBuilder(client)
     .image(image)
     .quality(quality)
     .auto("format");
-
-  const metadata = image.asset.metadata;
-
+  const crop =
+    typeof image == "object" && "crop" in image && isCrop(image.crop)
+      ? image.crop
+      : undefined;
   const cropSize = metadata?.dimensions
-    ? image.crop
+    ? crop
       ? {
-          width: metadata.dimensions.width - image.crop.left - image.crop.right,
-          height:
-            metadata.dimensions.height - image.crop.top - image.crop.bottom,
+          width: metadata.dimensions.width - crop.left - crop.right,
+          height: metadata.dimensions.height - crop.top - crop.bottom,
         }
       : metadata.dimensions
     : undefined;
@@ -128,37 +134,19 @@ export function imageProps({
       ? fit({ width: 1, height: aspectRatio }, cropSize, "contain")
       : cropSize
     : undefined;
-
+  const url = buildAspectRatio(builder, lowResWidth, aspectRatio).url();
   return {
-    src:
-      metadata?.lqip ??
-      buildAspectRatio(builder, lowResWidth, aspectRatio).url(),
-    srcset: sortedWidths
-      .map(
-        (width) =>
-          `${buildAspectRatio(builder, width, aspectRatio).url()} ${width}w`
-      )
-      .join(","),
+    src: widths ? url : metadata?.lqip ?? url,
+    srcset: widths
+      ? Array.from(widths)
+          .sort((a, b) => a - b)
+          .map(
+            (width) =>
+              `${buildAspectRatio(builder, width, aspectRatio).url()} ${width}w`
+          )
+          .join(",")
+      : undefined,
     naturalWidth: naturalSize?.width,
     naturalHeight: naturalSize?.height,
   };
-}
-
-export function metaImageUrl({
-  image,
-  client,
-  width = defaultMetaImageWidth,
-  quality = defaultQuality,
-}: {
-  image: SanityImageObjectWithMetadata;
-  client: SanityClientLike | SanityProjectDetails | SanityModernClientLike;
-  width: number;
-  quality?: number;
-}) {
-  return imageUrlBuilder(client)
-    .image(image)
-    .quality(quality)
-    .auto("format")
-    .width(width)
-    .url();
 }
