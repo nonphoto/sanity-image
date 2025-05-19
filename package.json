@@ -1,55 +1,48 @@
 {
   "name": "@nonphoto/sanity-image",
-  "version": "0.1.2",
+  "version": "0.0.0",
   "type": "module",
-  "files": [
-    "dist"
-  ],
-  "private": false,
   "sideEffects": false,
-  "scripts": {
-    "dev": "vite serve dev",
-    "build": "tsup",
-    "test": "vitest",
-    "prepublishOnly": "pnpm build",
-    "format": "prettier --ignore-path .gitignore -w \"src/**/*.{js,ts,json,css,tsx,jsx}\" \"dev/**/*.{js,ts,json,css,tsx,jsx}\"",
-    "update-deps": "pnpm up -Li",
-    "typecheck": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "@changesets/cli": "2.26.1",
-    "@types/node": "18.14.6",
-    "prettier": "2.8.7",
-    "tsup": "6.7.0",
-    "tsup-preset-solid": "0.1.8",
-    "typescript": "^4.9.4",
-    "vite": "^4.0.4",
-    "vitest": "0.29.8"
-  },
-  "dependencies": {
-    "@sanity/image-url": "1.0.2"
-  },
-  "packageManager": "pnpm@7.29.1",
   "publishConfig": {
     "access": "public"
   },
-  "browser": {},
   "exports": {
-    "development": {
+    ".": {
       "import": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/dev.js"
-      },
-      "require": "./dist/dev.cjs"
+        "default": "./dist/index.js"
+      }
     },
-    "import": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    },
-    "require": "./dist/index.cjs"
+    "./src/*": "./src/*"
   },
-  "typesVersions": {},
-  "main": "./dist/index.cjs",
+  "files": [
+    "./dist/*",
+    "./src/*"
+  ],
   "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "prepare": "pnpm build",
+    "build": "tsup ./src/index.ts --dts --format esm --clean",
+    "release": "semantic-release"
+  },
+  "keywords": [
+    "spring",
+    "physics",
+    "animation"
+  ],
+  "author": "Jonas Luebbers <jonas@jonasluebbers.com> (https://www.jonasluebbers.com)",
+  "license": "MIT",
+  "devDependencies": {
+    "semantic-release": "24.2.3",
+    "tsup": "8.4.0",
+    "typescript": "5.8.2"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "dependencies": {
+    "@sanity/image-url": "1.0.2"
+  }
 }
