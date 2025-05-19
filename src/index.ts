@@ -92,6 +92,22 @@ function isCrop(x: any): x is SanityImageCrop {
   );
 }
 
+export interface ImagePropsOptions {
+  client: SanityClientLike | SanityProjectDetails | SanityModernClientLike;
+  image: SanityImageSource;
+  metadata?: Metadata;
+  widths?: number[];
+  quality?: number;
+  aspectRatio?: number;
+}
+
+export interface ImagePropsReturn {
+  src: string;
+  srcset?: string;
+  naturalWidth?: number;
+  naturalHeight?: number;
+}
+
 export function imageProps({
   client,
   image,
@@ -99,19 +115,7 @@ export function imageProps({
   widths,
   quality = defaultQuality,
   aspectRatio,
-}: {
-  client: SanityClientLike | SanityProjectDetails | SanityModernClientLike;
-  image: SanityImageSource;
-  metadata?: Metadata;
-  widths?: number[];
-  quality?: number;
-  aspectRatio?: number;
-}): {
-  src: string;
-  srcset?: string;
-  naturalWidth?: number;
-  naturalHeight?: number;
-} {
+}: ImagePropsOptions): ImagePropsReturn {
   const builder = imageUrlBuilder(client)
     .image(image)
     .quality(quality)
