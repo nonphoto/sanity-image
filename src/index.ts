@@ -1,5 +1,4 @@
 import imageUrlBuilder from "@sanity/image-url";
-import { ImageUrlBuilder } from "@sanity/image-url/lib/types/builder";
 import type {
   SanityAsset,
   SanityClientLike,
@@ -49,9 +48,7 @@ export const defaultWidths = [
   240,
 ];
 
-export const lowResWidth = 24;
-
-export const defaultMetaImageWidth = 1200;
+export const defaultWidth = 1280;
 
 export const defaultQuality = 90;
 
@@ -73,18 +70,6 @@ export function fit(
     width: containee.width * s,
     height: containee.height * s,
   };
-}
-
-function buildAspectRatio(
-  builder: ImageUrlBuilder,
-  width: number,
-  aspectRatio?: number
-) {
-  if (aspectRatio) {
-    return builder.width(width).height(Math.round(width * aspectRatio));
-  } else {
-    return builder.width(width);
-  }
 }
 
 export function isCrop(x: unknown): x is SanityImageCrop {
@@ -195,7 +180,30 @@ export function isMetadata(x: unknown): x is SanityImageMetadata {
   );
 }
 
-export interface ImagePropsOptions {
+export interface ImageSrcOptions {
+  client: SanityClientLike | SanityProjectDetails | SanityModernClientLike;
+  source: SanityImageSource;
+  width: number;
+  quality?: number;
+  aspectRatio?: number;
+}
+
+export function imageSrc({
+  client,
+  source,
+  width,
+  quality = defaultQuality,
+  aspectRatio,
+}: ImageSrcOptions): string {
+  const builder = imageUrlBuilder(client)
+    .image(source)
+    .quality(quality)
+    .auto("format")
+    .width(width);
+  return (aspectRatio ? builder.height(width * aspectRatio) : builder).url();
+}
+
+export interface ImageSrcsetOptions {
   client: SanityClientLike | SanityProjectDetails | SanityModernClientLike;
   source: SanityImageSource;
   widths?: number[];
@@ -203,40 +211,34 @@ export interface ImagePropsOptions {
   aspectRatio?: number;
 }
 
-export interface ImagePropsReturn {
-  src: string;
-  srcset?: string;
-}
-
-export function imageProps({
+export function imageSrcset({
   client,
   source,
   widths = defaultWidths,
   quality = defaultQuality,
   aspectRatio,
-}: ImagePropsOptions): ImagePropsReturn {
+}: ImageSrcsetOptions): string {
   const builder = imageUrlBuilder(client)
     .image(source)
     .quality(quality)
     .auto("format");
-  const url = buildAspectRatio(builder, lowResWidth, aspectRatio).url();
-  return {
-    src: url,
-    srcset:
-      widths.length > 0
-        ? widths
-            .sort((a, b) => a - b)
-            .map(
-              (width) =>
-                `${buildAspectRatio(
-                  builder,
-                  width,
-                  aspectRatio
-                ).url()} ${width}w`
-            )
-            .join(",")
-        : undefined,
-  };
+  return widths
+    .sort((a, b) => a - b)
+    .map((width) => {
+      const url = (aspectRatio ? builder.height(width * aspectRatio) : builder)
+        .width(width)
+        .url();
+      return `${url} ${width}w`;
+    })
+    .join(",");
+}
+
+export function imageAlt(source: SanityImageSource): string | undefined {
+  return isImageObjectLike(source) &&
+    "alt" in source &&
+    typeof source.alt === "string"
+    ? source.alt
+    : undefined;
 }
 
 export function croppedSize(intrinsicSize: Size, crop: SanityImageCrop): Size {
@@ -250,20 +252,21 @@ export function aspectRatio(size: Size): number {
   return size.height / size.width;
 }
 
+export function imageMetadata(
+  source: SanityImageSource
+): SanityImageMetadata | undefined {
+  const asset = isImageObjectLike(source) ? source.asset : source;
+  return isAsset(asset) && isMetadata(asset.metadata)
+    ? asset.metadata
+    : undefined;
+}
+
 export function imageCroppedSize(source: SanityImageSource): Size | undefined {
-  const imageObject = isImageObject(source) ? source : undefined;
-  const dimensions =
-    imageObject &&
-    isAsset(imageObject.asset) &&
-    isDimensions(imageObject.asset.dimensions)
-      ? imageObject.asset.dimensions
-      : isAsset(source) && isDimensions(source.dimensions)
-      ? source.dimensions
-      : undefined;
-  return dimensions
-    ? imageObject?.crop
-      ? croppedSize(dimensions, imageObject.crop)
-      : dimensions
+  const metadata = imageMetadata(source);
+  return metadata?.dimensions
+    ? isImageObject(source) && source.crop != null
+      ? croppedSize(metadata.dimensions, source.crop)
+      : metadata.dimensions
     : undefined;
 }
 
