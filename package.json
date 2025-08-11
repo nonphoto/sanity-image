@@ -1,6 +1,8 @@
 {
   "name": "@nonphoto/sanity-image",
   "version": "0.0.0",
+  "author": "Jonas Luebbers <jonas@jonasluebbers.com> (https://www.jonasluebbers.com)",
+  "license": "MIT",
   "type": "module",
   "sideEffects": false,
   "publishConfig": {
@@ -26,23 +28,16 @@
     "build": "tsup ./src/index.ts --dts --format esm --clean",
     "release": "semantic-release"
   },
-  "keywords": [
-    "spring",
-    "physics",
-    "animation"
-  ],
-  "author": "Jonas Luebbers <jonas@jonasluebbers.com> (https://www.jonasluebbers.com)",
-  "license": "MIT",
+  "dependencies": {
+    "@sanity/image-url": "^1.1.0"
+  },
   "devDependencies": {
     "semantic-release": "24.2.7",
     "tsup": "8.5.0",
     "typescript": "5.9.2"
   },
   "engines": {
-    "node": ">=20",
-    "pnpm": ">=9"
+    "node": ">=20"
   },
-  "dependencies": {
-    "@sanity/image-url": "^1.1.0"
-  }
+  "packageManager": "pnpm@10.12.1"
 }

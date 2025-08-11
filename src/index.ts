@@ -113,7 +113,7 @@ export function isImageObjectLike(x: unknown): x is SanityImageObjectLike {
     x != null &&
     typeof x === "object" &&
     "asset" in x &&
-    (isAsset(x) || isReference(x))
+    (isAsset(x.asset) || isReference(x.asset))
   );
 }
 
