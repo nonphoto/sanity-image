@@ -1,32 +1,21 @@
 import imageUrlBuilder from "@sanity/image-url";
-import type {
+import {
   SanityAsset,
   SanityClientLike,
   SanityImageCrop,
   SanityImageDimensions,
   SanityImageHotspot,
+  SanityImageMetadata,
   SanityImageObject,
+  SanityImageObjectLike,
   SanityImageSource,
   SanityModernClientLike,
   SanityProjectDetails,
   SanityReference,
-} from "@sanity/image-url/lib/types/types.js";
+  Size,
+} from "./types";
 
-export interface SanityImageObjectLike
-  extends Pick<SanityImageObject, "asset"> {
-  [key: string]: any;
-}
-
-export interface SanityImageMetadata {
-  lqip?: string;
-  dimensions?: SanityImageDimensions;
-  [key: string]: any;
-}
-
-export interface Size {
-  width: number;
-  height: number;
-}
+export * from "./types";
 
 export const defaultWidths = [
   6016, // 6K
