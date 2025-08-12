@@ -28,9 +28,6 @@
     "build": "tsup ./src/index.ts --dts --format esm --clean",
     "release": "semantic-release"
   },
-  "dependencies": {
-    "@sanity/image-url": "^1.1.0"
-  },
   "devDependencies": {
     "semantic-release": "24.2.7",
     "tsup": "8.5.0",
