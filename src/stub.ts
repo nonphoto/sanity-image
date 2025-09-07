@@ -1,3 +1,13 @@
+import { isSanityImageAssetLike, SanityImageAssetLike } from "./asset";
+import { SanityImageObject } from "./imageObject";
+import { isSanityReference, SanityReference } from "./reference";
+
+export type SanityImageSource =
+  | SanityImageObject
+  | SanityReference
+  | SanityImageAssetLike
+  | string;
+
 export interface SanityImageAssetStub {
   id: string;
   width: number;
@@ -16,23 +26,19 @@ export function parseSanityImageAssetId(
   }
 }
 
+export function sanityImageAssetId(source: SanityImageSource): string {
+  return typeof source === "string"
+    ? source
+    : isSanityReference(source)
+    ? source._ref
+    : isSanityImageAssetLike(source)
+    ? source._id
+    : sanityImageAssetId(source.asset);
+}
+
 export function sanityImageAssetStub(
-  source: unknown
+  source: SanityImageSource
 ): SanityImageAssetStub | undefined {
   const id = sanityImageAssetId(source);
   return id ? parseSanityImageAssetId(id) : undefined;
-}
-
-export function sanityImageAssetId(source: unknown): string | undefined {
-  return typeof source === "string"
-    ? source
-    : typeof source === "object" && source != null
-    ? "_ref" in source && typeof source._ref === "string"
-      ? source._ref
-      : "_id" in source && typeof source._id === "string"
-      ? source._id
-      : "asset" in source
-      ? sanityImageAssetId(source.asset)
-      : undefined
-    : undefined;
 }
