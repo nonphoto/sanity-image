@@ -1,4 +1,5 @@
 export * from "./asset";
+export * from "./crop";
 export * from "./imageObject";
 export * from "./params";
 export * from "./rect";
