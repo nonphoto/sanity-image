@@ -1,4 +1,4 @@
-export type SanityImageCrop = {
+export type Crop = {
   top?: number;
   bottom?: number;
   left?: number;

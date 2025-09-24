@@ -26,7 +26,7 @@ export type Orientation = 0 | 90 | 180 | 270;
 
 export type Dpr = 1 | 2 | 3;
 
-export type SanityImageParams = {
+export type ImageOptions = {
   auto?: AutoMode;
   background?: string;
   blur?: number;
@@ -63,7 +63,7 @@ function isValidEntry(entry: [unknown, unknown]): entry is ValidEntry {
   );
 }
 
-export function sanityImageParamsToSearchParamEntries({
+export function imageOptionsToSearchParamEntries({
   auto,
   background,
   blur,
@@ -89,7 +89,7 @@ export function sanityImageParamsToSearchParamEntries({
   saturation,
   sharpen,
   width,
-}: SanityImageParams): string[][] {
+}: ImageOptions): string[][] {
   return Object.entries({
     auto,
     bg: background,

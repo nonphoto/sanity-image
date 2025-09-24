@@ -1,5 +1,5 @@
-import { SanityImageCrop } from "./crop";
-import { SanityImageAssetStub } from "./stub";
+import { ImageAsset } from "./asset";
+import { Crop } from "./crop";
 
 export interface RectLike {
   pos: ArrayLike<number>;
@@ -7,8 +7,8 @@ export interface RectLike {
 }
 
 export function rectFromCrop(
-  asset: Pick<SanityImageAssetStub, "width" | "height">,
-  crop: SanityImageCrop,
+  asset: Pick<ImageAsset, "width" | "height">,
+  crop: Crop,
 ): RectLike {
   const left = crop.left ?? 0;
   const right = crop.right ?? 0;
