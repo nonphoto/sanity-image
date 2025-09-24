@@ -32,7 +32,7 @@ export interface SanityClientLike {
 export function sanityImageUrl(
   client: SanityClientLike,
   image: SanityImageAssetStub,
-  params?: SanityImageParams
+  params?: SanityImageParams,
 ): string {
   const url = new URL(
     [
@@ -43,11 +43,11 @@ export function sanityImageUrl(
       image.vanityName,
     ]
       .filter(Boolean)
-      .join("/")
+      .join("/"),
   );
   if (params) {
     url.search = new URLSearchParams(
-      sanityImageParamsToSearchParamEntries(params)
+      sanityImageParamsToSearchParamEntries(params),
     ).toString();
   }
   return url.href;
@@ -56,19 +56,17 @@ export function sanityImageUrl(
 export function sanityImageSrcset(
   client: SanityClientLike,
   image: SanityImageAssetStub,
-  params?: Omit<SanityImageParams, "width">,
-  widths: number[] = defaultSrcsetWidths
+  params?: (width: number) => Omit<SanityImageParams, "width">,
+  widths: number[] = defaultSrcsetWidths,
 ): string {
-  const aspectRatio = image.height / image.width;
   return [
     ...widths.sort((a, b) => a - b).filter((width) => width < image.width),
     image.width,
   ]
     .map((width) => {
       const url = sanityImageUrl(client, image, {
-        ...params,
+        ...params?.(width),
         width,
-        height: width * aspectRatio,
       });
       return `${url} ${width}w`;
     })
