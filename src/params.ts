@@ -1,4 +1,3 @@
-import { VEC2, Vec2Like, ZERO2 } from "@thi.ng/vectors";
 import { RectLike } from "./rect";
 
 export type ImageFormat = "jpg" | "pjpg" | "png" | "webp";
@@ -37,7 +36,7 @@ export type SanityImageParams = {
   fit?: FitMode;
   flipHorizontal?: boolean;
   flipVertical?: boolean;
-  focalPoint?: { x: number; y: number };
+  focalPoint?: ArrayLike<number>;
   format?: ImageFormat;
   frame?: number;
   height?: number;
@@ -49,7 +48,7 @@ export type SanityImageParams = {
   orientation?: Orientation;
   pad?: number;
   quality?: number;
-  rect?: { left: number; top: number; width: number; height: number };
+  rect?: RectLike;
   saturation?: number;
   sharpen?: number;
   width?: number;
@@ -101,8 +100,8 @@ export function sanityImageParamsToSearchParamEntries({
     fit,
     flip: [flipHorizontal && "h", flipVertical && "v"].filter(Boolean).join(""),
     fm: format,
-    "fp-x": focalPoint?.x,
-    "fp-y": focalPoint?.y,
+    "fp-x": focalPoint?.[0],
+    "fp-y": focalPoint?.[1],
     frame,
     h: height,
     invert,
@@ -114,7 +113,9 @@ export function sanityImageParamsToSearchParamEntries({
     pad,
     q: quality,
     rect: rect
-      ? [rect.left, rect.top, rect.width, rect.height].map(Math.round).join(",")
+      ? [rect.pos[0], rect.pos[1], rect.size[0], rect.size[1]]
+          .map(Math.round)
+          .join(",")
       : undefined,
     sat: saturation,
     sharp: sharpen,
