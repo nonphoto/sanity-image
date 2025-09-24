@@ -1,3 +1,6 @@
+import { VEC2, Vec2Like, ZERO2 } from "@thi.ng/vectors";
+import { RectLike } from "./rect";
+
 export type ImageFormat = "jpg" | "pjpg" | "png" | "webp";
 
 export type FitMode =
@@ -51,6 +54,15 @@ export type SanityImageParams = {
   sharpen?: number;
   width?: number;
 };
+
+type ValidEntry = [string, string | number | boolean];
+
+function isValidEntry(entry: [unknown, unknown]): entry is ValidEntry {
+  return (
+    typeof entry[0] === "string" &&
+    ["string", "number", "boolean"].includes(typeof entry[1])
+  );
+}
 
 export function sanityImageParamsToSearchParamEntries({
   auto,
@@ -108,11 +120,10 @@ export function sanityImageParamsToSearchParamEntries({
     sharp: sharpen,
     w: width,
   })
+    .filter(isValidEntry)
     .filter(([, value]) => typeof value === "number" || Boolean(value))
     .map(([key, value]) => [
       key,
-      encodeURIComponent(
-        typeof value === "number" ? Math.round(value) : (value as string)
-      ),
+      encodeURIComponent(typeof value === "number" ? Math.round(value) : value),
     ]);
 }
