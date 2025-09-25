@@ -54,16 +54,16 @@ export type ImageOptions = {
   width?: number;
 };
 
-type ValidEntry = [string, string | number | boolean];
-
-function isValidEntry(entry: [unknown, unknown]): entry is ValidEntry {
-  return (
-    typeof entry[0] === "string" &&
-    ["string", "number", "boolean"].includes(typeof entry[1])
-  );
+function entry(
+  key: string,
+  value: string | number | boolean | null | undefined,
+): [string, string] | undefined {
+  return value == null || value === false
+    ? undefined
+    : [key, String(typeof value === "number" ? Math.round(value) : value)];
 }
 
-export function imageOptionsToSearchParamEntries({
+export function imageOptionsToURLSearch({
   auto,
   background,
   blur,
@@ -89,42 +89,52 @@ export function imageOptionsToSearchParamEntries({
   saturation,
   sharpen,
   width,
-}: ImageOptions): string[][] {
-  return Object.entries({
-    auto,
-    bg: background,
-    blur,
-    crop,
-    dl: download,
-    dpr,
-    fit,
-    flip: [flipHorizontal && "h", flipVertical && "v"].filter(Boolean).join(""),
-    fm: format,
-    "fp-x": focalPoint?.[0],
-    "fp-y": focalPoint?.[1],
-    frame,
-    h: height,
-    invert,
-    "max-h": maxHeight,
-    "max-w": maxWidth,
-    "min-h": minHeight,
-    "min-w": minWidth,
-    or: orientation,
-    pad,
-    q: quality,
-    rect: rect
-      ? [rect.pos[0], rect.pos[1], rect.size[0], rect.size[1]]
-          .map(Math.round)
-          .join(",")
-      : undefined,
-    sat: saturation,
-    sharp: sharpen,
-    w: width,
-  })
-    .filter(isValidEntry)
-    .filter(([, value]) => typeof value === "number" || Boolean(value))
-    .map(([key, value]) => [
-      key,
-      String(typeof value === "number" ? Math.round(value) : value),
-    ]);
+}: ImageOptions): string {
+  return (
+    "?" +
+    [
+      entry("auto", auto),
+      entry("bg", background),
+      entry("blur", blur),
+      entry("crop", crop),
+      entry("dl", download),
+      entry("dpr", dpr),
+      entry("fit", fit),
+      entry(
+        "flip",
+        flipHorizontal || flipVertical
+          ? [flipHorizontal && "h", flipVertical && "v"]
+              .filter(Boolean)
+              .join("")
+          : undefined,
+      ),
+      entry("fm", format),
+      entry("fp-x", focalPoint?.[0]),
+      entry("fp-y", focalPoint?.[1]),
+      entry("frame", frame),
+      entry("h", height),
+      entry("invert", invert),
+      entry("max-h", maxHeight),
+      entry("max-w", maxWidth),
+      entry("min-h", minHeight),
+      entry("min-w", minWidth),
+      entry("or", orientation),
+      entry("pad", pad),
+      entry("q", quality),
+      entry(
+        "rect",
+        rect
+          ? [rect.pos[0], rect.pos[1], rect.size[0], rect.size[1]]
+              .map(Math.round)
+              .join(",")
+          : undefined,
+      ),
+      entry("sat", saturation),
+      entry("sharp", sharpen),
+      entry("w", width),
+    ]
+      .filter((entry) => entry != null)
+      .map((entry) => entry.join("="))
+      .join("&")
+  );
 }

@@ -1,6 +1,6 @@
 import { ImageAsset } from "./asset";
 import { defaultSrcsetWidths } from "./constants";
-import { ImageOptions, imageOptionsToSearchParamEntries } from "./options";
+import { ImageOptions, imageOptionsToURLSearch } from "./options";
 
 export interface SanityClientLike {
   projectId: string;
@@ -28,9 +28,7 @@ export function imageUrl(
       .join("/"),
   );
   if (options) {
-    url.search = new URLSearchParams(
-      imageOptionsToSearchParamEntries(options),
-    ).toString();
+    url.search = imageOptionsToURLSearch(options);
   }
   return url.href;
 }
