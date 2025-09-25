@@ -125,6 +125,6 @@ export function imageOptionsToSearchParamEntries({
     .filter(([, value]) => typeof value === "number" || Boolean(value))
     .map(([key, value]) => [
       key,
-      encodeURIComponent(typeof value === "number" ? Math.round(value) : value),
+      String(typeof value === "number" ? Math.round(value) : value),
     ]);
 }
