@@ -38,7 +38,7 @@ export function imageUrl(
 export function imageSrcset(
   client: SanityClientLike,
   asset: ImageAsset,
-  params?: (width: number) => Omit<ImageOptionsWithVanityName, "width">,
+  options?: (width: number) => Omit<ImageOptionsWithVanityName, "width">,
   widths: number[] = defaultSrcsetWidths,
 ): string | undefined {
   return [
@@ -47,10 +47,24 @@ export function imageSrcset(
   ]
     .map((width) => {
       const url = imageUrl(client, asset, {
-        ...params?.(width),
+        ...options?.(width),
         width,
       });
       return `${url} ${width}w`;
     })
     .join(",");
+}
+
+export function imageAspectRatio(asset: ImageAsset, options?: ImageOptions) {
+  const size =
+    options &&
+    options.fit &&
+    ["crop", "fill", "fillmax", "scale", "min"].includes(options.fit) &&
+    options.width != null &&
+    options.height != null
+      ? [options.width, options.height]
+      : options?.rect
+        ? options.rect.size
+        : [asset.width, asset.height];
+  return size[0] / size[1];
 }
