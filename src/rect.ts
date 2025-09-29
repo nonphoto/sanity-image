@@ -1,15 +1,22 @@
+import { InferOutput, is, number, object, tuple } from "valibot";
 import { ImageAsset } from "./asset";
 import { Crop } from "./crop";
 
-export interface RectLike {
-  pos: ArrayLike<number>;
-  size: ArrayLike<number>;
+export const rectSchema = object({
+  pos: tuple([number(), number()]),
+  size: tuple([number(), number()]),
+});
+
+export type Rect = InferOutput<typeof rectSchema>;
+
+export function isRect(input: unknown): input is Rect {
+  return is(rectSchema, input);
 }
 
 export function rectFromCrop(
   asset: Pick<ImageAsset, "width" | "height">,
   crop: Crop,
-): RectLike {
+): Rect {
   const left = Math.max(crop.left ?? 0, 0);
   const right = Math.max(crop.right ?? 0, 0);
   const top = Math.max(crop.top ?? 0, 0);

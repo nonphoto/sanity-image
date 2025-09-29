@@ -1,58 +1,73 @@
-import { RectLike } from "./rect";
+import {
+  boolean,
+  InferOutput,
+  is,
+  literal,
+  number,
+  object,
+  partial,
+  string,
+  tuple,
+  union,
+} from "valibot";
+import { rectSchema } from "./rect";
 
-export type ImageFormat = "jpg" | "pjpg" | "png" | "webp";
+export const transformationsSchema = partial(
+  object({
+    auto: literal("format"),
+    background: string(),
+    blur: number(),
+    crop: union([
+      literal("top"),
+      literal("bottom"),
+      literal("left"),
+      literal("right"),
+      literal("center"),
+      literal("focalpoint"),
+      literal("entropy"),
+    ]),
+    download: union([string(), boolean()]),
+    dpr: union([literal(1), literal(2), literal(3)]),
+    fit: union([
+      literal("clip"),
+      literal("crop"),
+      literal("fill"),
+      literal("fillmax"),
+      literal("max"),
+      literal("scale"),
+      literal("min"),
+    ]),
+    flipHorizontal: boolean(),
+    flipVertical: boolean(),
+    focalPoint: tuple([number(), number()]),
+    format: union([
+      literal("jpg"),
+      literal("pjpg"),
+      literal("png"),
+      literal("webp"),
+    ]),
+    frame: number(),
+    height: number(),
+    invert: boolean(),
+    maxHeight: number(),
+    maxWidth: number(),
+    minHeight: number(),
+    minWidth: number(),
+    orientation: union([literal(0), literal(90), literal(180), literal(270)]),
+    pad: number(),
+    quality: number(),
+    rect: rectSchema,
+    saturation: number(),
+    sharpen: number(),
+    width: number(),
+  }),
+);
 
-export type FitMode =
-  | "clip"
-  | "crop"
-  | "fill"
-  | "fillmax"
-  | "max"
-  | "scale"
-  | "min";
+export type Transformations = InferOutput<typeof transformationsSchema>;
 
-export type CropMode =
-  | "top"
-  | "bottom"
-  | "left"
-  | "right"
-  | "center"
-  | "focalpoint"
-  | "entropy";
-
-export type AutoMode = "format";
-
-export type Orientation = 0 | 90 | 180 | 270;
-
-export type Dpr = 1 | 2 | 3;
-
-export type ImageOptions = {
-  auto?: AutoMode;
-  background?: string;
-  blur?: number;
-  crop?: CropMode;
-  download?: boolean | string;
-  dpr?: Dpr;
-  fit?: FitMode;
-  flipHorizontal?: boolean;
-  flipVertical?: boolean;
-  focalPoint?: ArrayLike<number>;
-  format?: ImageFormat;
-  frame?: number;
-  height?: number;
-  invert?: boolean;
-  maxHeight?: number;
-  maxWidth?: number;
-  minHeight?: number;
-  minWidth?: number;
-  orientation?: Orientation;
-  pad?: number;
-  quality?: number;
-  rect?: RectLike;
-  saturation?: number;
-  sharpen?: number;
-  width?: number;
-};
+export function isTransformations(input: unknown): input is Transformations {
+  return is(transformationsSchema, input);
+}
 
 function entry(
   key: string,
@@ -63,7 +78,7 @@ function entry(
     : [key, String(typeof value === "number" ? Math.round(value) : value)];
 }
 
-export function imageOptionsToURLSearch({
+export function transformationsToURLSearch({
   auto,
   background,
   blur,
@@ -89,7 +104,7 @@ export function imageOptionsToURLSearch({
   saturation,
   sharpen,
   width,
-}: ImageOptions): string {
+}: Transformations): string {
   return (
     "?" +
     [
