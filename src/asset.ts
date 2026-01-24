@@ -96,7 +96,7 @@ export function parseAssetId(id: string): ImageAsset | undefined {
 export function imageAssetFromSource(
   source: ImageSource,
 ): ImageAsset | undefined {
-  if (typeof source === "object" && "assetId" in source) {
+  if (isImageAsset(source)) {
     return source;
   } else {
     const id = assetIdFromSource(source);
