@@ -2,7 +2,10 @@
   "name": "@nonphoto/sanity-image",
   "version": "0.0.0",
   "author": "Jonas Luebbers <jonas@jonasluebbers.com> (https://www.jonasluebbers.com)",
-  "url": "https://github.com/nonphoto/sanity-image",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nonphoto/sanity-image.git",
+  },
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
