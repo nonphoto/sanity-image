@@ -6,7 +6,6 @@ on:
 
 permissions:
   contents: read # for checkout
-  id-token: write
 
 jobs:
   release:
@@ -35,6 +34,8 @@ jobs:
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm install
+      - name: Verify provenance for dependencies
+        run: pnpm audit signatures
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
