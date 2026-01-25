@@ -7,6 +7,10 @@ export interface SanityClientLike {
   dataset: string;
 }
 
+
+/**
+ * Get the URL of the image to be used in the `src` attribute.
+ */
 export function imageUrl(client: SanityClientLike, asset: ImageAsset): string {
   const url = new URL(
     [
